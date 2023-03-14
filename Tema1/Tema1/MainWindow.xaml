@@ -1,0 +1,28 @@
+﻿<Window x:Class="Tema1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tema1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="600">
+    <Grid>
+        <Canvas>
+            <ListView Height="278" Width="200" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="ListView_SelectionChanged" Canvas.Top="48" Canvas.Left="10">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <Button Content="New User" Canvas.Left="74" Canvas.Top="380" HorizontalAlignment="Left" VerticalAlignment="Center" Width="91" Click="Button_Click"/>
+            <Button Content="Delete User" Canvas.Left="198" Canvas.Top="380" HorizontalAlignment="Left" VerticalAlignment="Center" Width="91" Click="Button_Click_1"/>
+            <Button Content="Play" Canvas.Left="329" Canvas.Top="380" RenderTransformOrigin="0.076,-0.198" HorizontalAlignment="Left" VerticalAlignment="Center" Width="91"/>
+            <Button Content="Cancel" Canvas.Left="473" Canvas.Top="380" HorizontalAlignment="Left" VerticalAlignment="Center" Width="91"/>
+            <Button Content="&lt;&lt;" Canvas.Left="354" Canvas.Top="217"/>
+            <Button Content="&gt;&gt;" Canvas.Left="428" Canvas.Top="217" RenderTransformOrigin="0.076,0.102"/>
+            <Image Height="100" Canvas.Left="352" Canvas.Top="63" Width="100"/>
+        </Canvas>
+
+    </Grid>
+</Window>
