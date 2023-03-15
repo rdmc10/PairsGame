@@ -8,7 +8,7 @@
         Title="MainWindow" Height="450" Width="600">
     <Grid>
         <Canvas>
-            <ListView Height="278" Width="200" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="ListView_SelectionChanged" Canvas.Top="48" Canvas.Left="10">
+            <ListView x:Name ="UserListView" Height="278" Width="200" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="ListView_SelectionChanged" Canvas.Top="48" Canvas.Left="10">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn/>
@@ -22,6 +22,7 @@
             <Button Content="&lt;&lt;" Canvas.Left="354" Canvas.Top="217" Click="Previous_Image_Click"/>
             <Button Content="&gt;&gt;" Canvas.Left="428" Canvas.Top="217" RenderTransformOrigin="0.076,0.102" Click="Next_Image_Click"/>
             <Image x:Name="ImageHolder" Height="100" Canvas.Left="352" Canvas.Top="63" Width="100" Source="/hacker.png"/>
+            <TextBox x:Name="UserTextField" Canvas.Left="74" TextWrapping="Wrap" Text="Enter username" Canvas.Top="347" Width="91" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         </Canvas>
 
     </Grid>
