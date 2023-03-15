@@ -15,13 +15,13 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <Button Content="New User" Canvas.Left="74" Canvas.Top="380" HorizontalAlignment="Left" VerticalAlignment="Center" Width="91" Click="Button_Click"/>
-            <Button Content="Delete User" Canvas.Left="198" Canvas.Top="380" HorizontalAlignment="Left" VerticalAlignment="Center" Width="91" Click="Button_Click_1"/>
-            <Button Content="Play" Canvas.Left="329" Canvas.Top="380" RenderTransformOrigin="0.076,-0.198" HorizontalAlignment="Left" VerticalAlignment="Center" Width="91"/>
-            <Button Content="Cancel" Canvas.Left="473" Canvas.Top="380" HorizontalAlignment="Left" VerticalAlignment="Center" Width="91"/>
-            <Button Content="&lt;&lt;" Canvas.Left="354" Canvas.Top="217"/>
-            <Button Content="&gt;&gt;" Canvas.Left="428" Canvas.Top="217" RenderTransformOrigin="0.076,0.102"/>
-            <Image Height="100" Canvas.Left="352" Canvas.Top="63" Width="100"/>
+            <Button Content="New User" Canvas.Left="74" Canvas.Top="380" HorizontalAlignment="Left" VerticalAlignment="Center" Width="91" Click="New_User_Click"/>
+            <Button Content="Delete User" Canvas.Left="198" Canvas.Top="380" HorizontalAlignment="Left" VerticalAlignment="Center" Width="91" Click="Delete_User_Click" IsEnabled="False"/>
+            <Button Content="Play" Canvas.Left="329" Canvas.Top="380" RenderTransformOrigin="0.076,-0.198" HorizontalAlignment="Left" VerticalAlignment="Center" Width="91" IsEnabled="False"/>
+            <Button Content="Cancel" Canvas.Left="473" Canvas.Top="380" HorizontalAlignment="Left" VerticalAlignment="Center" Width="91" Click="Cancel_Click"/>
+            <Button Content="&lt;&lt;" Canvas.Left="354" Canvas.Top="217" Click="Previous_Image_Click"/>
+            <Button Content="&gt;&gt;" Canvas.Left="428" Canvas.Top="217" RenderTransformOrigin="0.076,0.102" Click="Next_Image_Click"/>
+            <Image x:Name="ImageHolder" Height="100" Canvas.Left="352" Canvas.Top="63" Width="100" Source="/hacker.png"/>
         </Canvas>
 
     </Grid>
