@@ -12,10 +12,9 @@ namespace Tema1
         public string UserName { get; set; }
         public UInt16 UserImageIndex { get; set; }
 
-        public User(string username, UInt16 userimgindex)
+        public User(string username)
         {
-            this.UserName = username;
-            this.UserImageIndex = userimgindex;
+            UserName = username;
         }
 
     }

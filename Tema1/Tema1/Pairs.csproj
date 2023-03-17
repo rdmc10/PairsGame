@@ -109,11 +109,5 @@
     <Resource Include="Resources\user.png" />
     <Resource Include="Resources\user2.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="users.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="usrimgdict.txt" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

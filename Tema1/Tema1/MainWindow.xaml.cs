@@ -47,32 +47,60 @@ namespace Tema1
             GetUsersFromText();
             LoadUsers();
             selectedUser = "";
-
     }
 
     private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            selectedUser = e.AddedItems[0].ToString();
+            if(e.AddedItems.Count != 0)
+                selectedUser = e.AddedItems[0].ToString();
+            if(selectedUser != "" && selectedUser != "pop")
+            {
+                string read = File.ReadAllText(@"Users/"+selectedUser+ ".txt");
+                ImageHolder.Source = new BitmapImage(new Uri(read, UriKind.Absolute));
+                ButtonDelete.IsEnabled = true;
+                ButtonPlay.IsEnabled = true;
+            }
         }
 
         private void Previous_Image_Click(object sender, RoutedEventArgs e)
         {
             Index = (Index - 1) == -1 ? bitmapImages.Count -1 : (Index - 1);
             ImageHolder.Source = bitmapImages[Index];
+
+            if(selectedUser!= "")
+            {
+                string filepath = @"Users/" + selectedUser + ".txt";
+                using(var sw = new StreamWriter(filepath, false))
+                {
+                    sw.WriteLine(ImageHolder.Source.ToString());
+                }
+            }
         }
 
         private void Next_Image_Click(object sender, RoutedEventArgs e)
         {
             Index = (Index + 1) % bitmapImages.Count;
             ImageHolder.Source = bitmapImages[Index];
+            
+            string filepath = @"Users/" + selectedUser + ".txt";
+            using(var sw = new StreamWriter(filepath, false))
+            {
+                sw.WriteLine(ImageHolder.Source.ToString());
+            }
+
         }
 
         private void New_User_Click(object sender, RoutedEventArgs e)
         {
             string username = UserTextField.GetLineText(0);
-            UInt16 usrimgindex = (ushort)Index;
-            User user = new User(username, usrimgindex);
+            User user = new User(username);
             userList.Add(user);
+
+            string filepath = @"Users/" + username + ".txt";
+            using(var sw = new StreamWriter(filepath, true))
+            {
+                sw.WriteLine(ImageHolder.Source.ToString());
+            }
 
             ExportUserToText();
             UserListView.Items.Add(user.UserName);
@@ -83,9 +111,7 @@ namespace Tema1
             List<string> read = File.ReadLines("users.txt").ToList();
             foreach ( string line in read )
             {
-                string[] info = line.Split(' ');
-                ushort userimgindex = UInt16.Parse(info[1]);
-                userList.Add(new User(info[0], userimgindex));
+                userList.Add(new User(line));
             }
         }
 
@@ -101,14 +127,30 @@ namespace Tema1
         {
             using (StreamWriter writer = new StreamWriter("users.txt", append: true))
             {
-                writer.WriteLine(userList[userList.Count - 1].UserName + " " + userList[userList.Count - 1].UserImageIndex);
+                writer.WriteLine(userList[userList.Count - 1].UserName);
             }
 
         }
 
         private void Delete_User_Click(object sender, RoutedEventArgs e)
         {
+            UserListView.Items.RemoveAt(UserListView.SelectedIndex);
+            File.Delete(@"Users/" + selectedUser + ".txt");
+            using (StreamWriter writer = new StreamWriter("users.txt", append: false))
+            {
+                foreach(User user in userList)
+                {
+                    if (user.UserName != selectedUser)
+                        writer.WriteLine(user.UserName);
+                }
+            }
+            selectedUser = "";
+        }
 
+        private void Play_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine(selectedUser);
+            Console.WriteLine(ImageHolder.Source.ToString());
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
