@@ -149,8 +149,15 @@ namespace Tema1
 
         private void Play_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine(selectedUser);
-            Console.WriteLine(ImageHolder.Source.ToString());
+            string filepath = @"Users/" + selectedUser + ".txt";
+            string pathtoimg = "";
+            using(var sw = new StreamWriter(filepath, true))
+            {
+                pathtoimg = ImageHolder.Source.ToString();
+            }
+            GameWindow gw = new GameWindow(selectedUser, pathtoimg );
+            gw.Show();
+
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
