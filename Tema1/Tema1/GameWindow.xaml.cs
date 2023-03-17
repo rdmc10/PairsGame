@@ -22,7 +22,7 @@ namespace Tema1
 
         private int NumberOfRows { get; set; }
         private int NumberOfCols { get; set; }
-        private int LevelNumber { get; set; }
+        private ushort LevelNumber { get; set; }
         private string Username { get; set; }
         private string PathToImg { get; set; }
         public GameWindow(string username, string pathToImg)
@@ -31,27 +31,41 @@ namespace Tema1
             InitializeComponent();
             LabelUsername.Content = Username;
             PathToImg = pathToImg;
+            LevelNumber = 1;
+            NumberOfRows = 5;
+            NumberOfCols = 5;
             UserImageHolder.Source = new BitmapImage(new Uri(PathToImg, UriKind.Absolute));
         }
         private void NewGameClick(object sender, RoutedEventArgs e)
         {
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < NumberOfRows; i++)
             {
                 matrixGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
                 matrixGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
             }
-            for (int row = 0; row < 5; row++)
+            for (int row = 0; row < NumberOfRows; row++)
             {
-                for (int col = 0; col < 5; col++)
+                for (int col = 0; col < NumberOfCols; col++)
                 {
                     Button button = new Button();
-                    button.Content = string.Format("({0},{1})", row, col);
+                    button.Content = new Image
+                    {
+                        Source = new BitmapImage(new Uri(@"Images/black.jpg", UriKind.Relative)) ,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Stretch = Stretch.Fill,
+                        Height = 256,
+                        Width = 256
+                    };
                     Grid.SetRow(button, row);
                     Grid.SetColumn(button, col);
                     matrixGrid.Children.Add(button);
                 }
             }
+        }
+
+        private void RandomAssingPhoto()
+        {
 
         }
 

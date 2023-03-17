@@ -116,7 +116,9 @@
     <Resource Include="Resources\user.png" />
     <Resource Include="Resources\user2.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\black.jpg" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\1.jpg" />
     <Resource Include="Images\10.jpg" />
