@@ -56,11 +56,15 @@ namespace Tema1
 
         private void InitializeBoard(int noRows, int noCols)
         {
+            matrixGrid.Children.Clear();
+            matrixGrid.RowDefinitions.Clear();
+            matrixGrid.ColumnDefinitions.Clear();
             assignedPhoto = new Dictionary<Tuple<ushort,ushort>,string>();
             assignedPairs = new Dictionary<Tuple<ushort, ushort>, Tuple<ushort, ushort>>();
             guessedPhotos = new Dictionary<Tuple<ushort, ushort>, bool>();
             NumberOfRows = noRows;
             NumberOfCols = noCols;
+            LabelLevel.Content = "Level: " + LevelNumber;
             for(ushort row = 0; row < NumberOfRows; row++)
             {
                 for(ushort col = 0; col < NumberOfCols; col++)
@@ -118,25 +122,33 @@ namespace Tema1
                 ushort rowpos = (ushort)Grid.GetRow(clickedBtn);
                 ushort colpos = (ushort)Grid.GetColumn(clickedBtn);
                 Tuple<ushort, ushort> firstpos= new Tuple<ushort,ushort>(rowpos, colpos);
-                firstClick = firstpos;
-                if (guessedPhotos[firstClick] == false)
+                if (guessedPhotos[firstpos] == false)
+                {
+                    firstClick = firstpos;
                     ChangeButtonImage(firstpos, assignedPhoto[firstClick]);
+                }
             }
             else
             {
                 ushort rowpos = (ushort)Grid.GetRow(clickedBtn);
                 ushort colpos = (ushort)Grid.GetColumn(clickedBtn);
                 Tuple<ushort, ushort> secondpos= new Tuple<ushort,ushort>(rowpos, colpos);
-                secondClick = secondpos;
-                if (guessedPhotos[secondClick] == false)
-                    ChangeButtonImage(secondpos, assignedPhoto[secondClick]);
-                //TODO: FIX SAME PHOTO CLICK
-                if (assignedPhoto[firstClick] == assignedPhoto[secondClick] )
+                if (!secondpos.Equals(firstClick))
                 {
-                    guessedPhotos[firstClick] = true;
-                    guessedPhotos[secondClick] = true;
-                    ChangeButtonImage(firstClick, "correct");
-                    ChangeButtonImage(secondClick, "correct");
+                    if (guessedPhotos[secondpos] == false)
+                    {
+                        secondClick = secondpos;
+                        ChangeButtonImage(secondpos, assignedPhoto[secondClick]);
+                    }
+                    if (assignedPhoto[firstClick] == assignedPhoto[secondClick] )
+                    {
+                        guessedPhotos[firstClick] = true;
+                        guessedPhotos[secondClick] = true;
+                        MakeButtonUnclickable(firstClick);
+                        MakeButtonUnclickable(secondClick);
+                        ChangeButtonImage(firstClick, "correct");
+                        ChangeButtonImage(secondClick, "correct");
+                    }
                 }
             }
 
@@ -146,6 +158,12 @@ namespace Tema1
             }
         }
 
+        private void MakeButtonUnclickable(Tuple<ushort,ushort> pos)
+        {
+            Button btn = matrixGrid.Children[(pos.Item1 * NumberOfCols) + pos.Item2 ] as Button;
+            btn.IsEnabled = false;
+
+        }
         private bool CheckIfGameIsWon()
         {
             foreach(KeyValuePair<Tuple<ushort,ushort>,bool> kvp in guessedPhotos)
@@ -164,6 +182,8 @@ namespace Tema1
                 ushort col = (ushort)((ushort)NumberOfCols - 1);
                 Tuple<ushort, ushort> pos = new Tuple<ushort, ushort>(row, col);
                 assignedPhoto[pos] = "correct";
+                guessedPhotos[pos] = true;
+                MakeButtonUnclickable(pos);
                 Button lastButton = matrixGrid.Children[(NumberOfRows * NumberOfCols) - 1] as Button;
                 lastButton.Content = new Image
                 {
@@ -223,7 +243,8 @@ namespace Tema1
         }
         private void OptionStandard(object sender, RoutedEventArgs e)
         {
-
+            NumberOfRows = 5;
+            NumberOfCols = 5;
         }
         private void StatisticsClick(object sender, RoutedEventArgs e)
         {
@@ -232,9 +253,15 @@ namespace Tema1
 
         private void OptionCustom(object sender, RoutedEventArgs e)
         {
+            var dialog = new Options();
+            var result = dialog.ShowDialog();
 
+            if (result.HasValue && result.Value)
+            {
+                NumberOfRows = dialog.CustomRows;
+                NumberOfCols = dialog.CustomCols;
+            }
         }
-
         private void ChangeButtonImage(Tuple<ushort,ushort> pos, string imgname)
         {
             Button btn = matrixGrid.Children[(pos.Item1 * NumberOfCols) + pos.Item2 ] as Button;

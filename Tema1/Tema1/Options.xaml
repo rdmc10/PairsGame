@@ -1,0 +1,17 @@
+﻿<Window x:Class="Tema1.Options"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tema1"
+        mc:Ignorable="d"
+        Title="Options" Height="259" Width="674">
+    <Grid Margin="0,0,0,9">
+        <Label Content="Enter number of rows" HorizontalAlignment="Left" Margin="73,37,0,0" VerticalAlignment="Top" Width="143"/>
+        <TextBox x:Name="FirstTextBox" HorizontalAlignment="Left" Margin="235,41,0,0" TextWrapping="Wrap" Text="{Binding Path=NumberOfRowsCustom, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" />
+        <Label Content="Enter number of columns&#xD;&#xA;" HorizontalAlignment="Left" Margin="72,109,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="SecondTextBox"  HorizontalAlignment="Left" Margin="235,112,0,0" TextWrapping="Wrap" Text="{Binding Path=NumberOfColsCustom, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120"/>
+        <Button Content="Save" HorizontalAlignment="Left" Margin="275,184,0,0" VerticalAlignment="Top" Height="26" Width="90" Click="Save_Click"/>
+
+    </Grid>
+</Window>
