@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,7 +30,12 @@ namespace Tema1
         private string PathToImg { get; set; }
 
         private Dictionary<Tuple<ushort,ushort>,string> assignedPhoto { get; set; }
+        private Dictionary<Tuple<ushort, ushort>, Tuple<ushort, ushort>> assignedPairs { get; set; }
         private List<ushort> allPhotos { get; set; }
+
+        private Tuple<ushort, ushort> firstClick { get; set; }
+        private Tuple<ushort, ushort> secondClick { get; set; }
+
         public GameWindow(string username, string pathToImg)
         {
             Username = username;
@@ -41,8 +47,9 @@ namespace Tema1
             NumberOfCols = 5;
             UserImageHolder.Source = new BitmapImage(new Uri(PathToImg, UriKind.Absolute));
             assignedPhoto = new Dictionary<Tuple<ushort,ushort>,string>();
+            assignedPairs = new Dictionary<Tuple<ushort, ushort>, Tuple<ushort, ushort>>();
             allPhotos= new List<ushort>();
-            for(ushort i = 1; i < 10; i++)
+            for(ushort i = 1; i <= 10; i++)
             {
                 allPhotos.Add(i);
             }
@@ -76,6 +83,7 @@ namespace Tema1
                         Height = 256,
                         Width = 256
                     };
+                    button.Click += Button_Click;
                     Grid.SetRow(button, row);
                     Grid.SetColumn(button, col);
                     matrixGrid.Children.Add(button);
@@ -84,45 +92,46 @@ namespace Tema1
             RandomAssingPhoto();
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
         private void RandomAssingPhoto()
         {
             Random rnd = new Random();
-            foreach(Button btn in matrixGrid.Children)
+            if ((NumberOfRows * NumberOfCols) % 2 != 0)
             {
-                int randomIndex = rnd.Next(1, allPhotos.Count);
-                ushort randomKey = allPhotos[randomIndex];
-
-                ushort row = (ushort)Grid.GetRow(btn);
-                ushort col = (ushort)Grid.GetColumn(btn);
+                ushort row = (ushort)((ushort)NumberOfRows - 1);
+                ushort col = (ushort)((ushort)NumberOfCols - 1);
                 Tuple<ushort, ushort> pos = new Tuple<ushort, ushort>(row, col);
-                List<Tuple<ushort,ushort>> falseKeys = assignedPhoto.Where(pair => pair.Value == 0.ToString()).Select(pair => pair.Key).ToList();
-                if(assignedPhoto[pos] == "0")
+                assignedPhoto[pos] = "correct";
+                Button lastButton = matrixGrid.Children[(NumberOfRows * NumberOfCols) - 1] as Button;
+                lastButton.Content = new Image
                 {
-                    assignedPhoto[pos] = randomKey.ToString();
-                    //TODO: Assign another unsigned button the same key;
-                    //List<Tuple<ushort,ushort>> falseKeys = assignedPhoto.Where(pair => pair.Value == 0).Select(pair => pair.Key).ToList();
-                    int rndNextIndex = rnd.Next(0, falseKeys.Count);
-                    Console.WriteLine(rndNextIndex);
-                    if(falseKeys.Count > 0)
-                    {
-                        Tuple<ushort,ushort> randomNextPos = falseKeys[rndNextIndex];
-                        assignedPhoto[randomNextPos] = randomKey.ToString();
-                    }
-                }
-            }
-            foreach(Button btn in matrixGrid.Children)
-            {
-                ushort row = (ushort)Grid.GetRow(btn);
-                ushort col = (ushort)Grid.GetColumn(btn);
-                Tuple<ushort, ushort> pos = new Tuple<ushort, ushort>(row, col);
-                btn.Content = new Image
-                {
-                    Source = new BitmapImage(new Uri(@"Images/" + assignedPhoto[pos] +".jpg", UriKind.Relative)) ,
+                    Source = new BitmapImage(new Uri(@"Images/correct.jpg", UriKind.Relative)) ,
                     VerticalAlignment = VerticalAlignment.Center,
                     Stretch = Stretch.Fill,
                     Height = 256,
                     Width = 256
                 };
+            }
+            foreach(Button btn in matrixGrid.Children)
+            {
+                int randomIndex = rnd.Next(1, 11);
+
+                ushort row = (ushort)Grid.GetRow(btn);
+                ushort col = (ushort)Grid.GetColumn(btn);
+                Tuple<ushort, ushort> pos = new Tuple<ushort, ushort>(row, col);
+                if(assignedPhoto[pos] == "0")
+                {
+                    assignedPhoto[pos] = randomIndex.ToString();
+                    List<Tuple<ushort,ushort>> falseKeys = assignedPhoto.Where(pair => pair.Value == 0.ToString()).Select(pair => pair.Key).ToList();
+                    int rndNextIndex = rnd.Next(0, falseKeys.Count);
+                    Tuple<ushort,ushort> randomNextPos = falseKeys[rndNextIndex];
+                    assignedPhoto[randomNextPos] = assignedPhoto[pos];
+                    assignedPairs[pos] = randomNextPos;
+                    assignedPairs[randomNextPos] = pos;
+                }
             }
         }
 
