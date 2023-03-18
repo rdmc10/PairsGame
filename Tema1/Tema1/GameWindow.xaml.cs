@@ -31,6 +31,7 @@ namespace Tema1
 
         private Dictionary<Tuple<ushort,ushort>,string> assignedPhoto { get; set; }
         private Dictionary<Tuple<ushort, ushort>, Tuple<ushort, ushort>> assignedPairs { get; set; }
+        private Dictionary<Tuple<ushort,ushort>,bool> guessedPhotos { get; set; }
         private List<ushort> allPhotos { get; set; }
 
         private Tuple<ushort, ushort> firstClick { get; set; }
@@ -45,26 +46,30 @@ namespace Tema1
             LevelNumber = 1;
             NumberOfRows = 5;
             NumberOfCols = 5;
-            UserImageHolder.Source = new BitmapImage(new Uri(PathToImg, UriKind.Absolute));
-            assignedPhoto = new Dictionary<Tuple<ushort,ushort>,string>();
-            assignedPairs = new Dictionary<Tuple<ushort, ushort>, Tuple<ushort, ushort>>();
             allPhotos= new List<ushort>();
             for(ushort i = 1; i <= 10; i++)
             {
                 allPhotos.Add(i);
             }
+            UserImageHolder.Source = new BitmapImage(new Uri(PathToImg, UriKind.Absolute));
+        }
+
+        private void InitializeBoard(int noRows, int noCols)
+        {
+            assignedPhoto = new Dictionary<Tuple<ushort,ushort>,string>();
+            assignedPairs = new Dictionary<Tuple<ushort, ushort>, Tuple<ushort, ushort>>();
+            guessedPhotos = new Dictionary<Tuple<ushort, ushort>, bool>();
+            NumberOfRows = noRows;
+            NumberOfCols = noCols;
             for(ushort row = 0; row < NumberOfRows; row++)
             {
                 for(ushort col = 0; col < NumberOfCols; col++)
                 {
                     Tuple <ushort,ushort> pos = new Tuple<ushort,ushort>(row, col);
+                    guessedPhotos[pos] = false;
                     assignedPhoto[pos] = "0";
                 }
             }
-        }
-        private void NewGameClick(object sender, RoutedEventArgs e)
-        {
-
             for (int i = 0; i < NumberOfRows; i++)
             {
                 matrixGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
@@ -91,10 +96,64 @@ namespace Tema1
             }
             RandomAssingPhoto();
         }
+        private void NewGameClick(object sender, RoutedEventArgs e)
+        {
+            InitializeBoard(NumberOfRows, NumberOfCols);
+        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            Button clickedBtn = sender as Button;
+            if(secondClick != null)
+            {
+                if (guessedPhotos[firstClick] == false && guessedPhotos[secondClick] == false)
+                {
+                    ChangeButtonImage(firstClick, "0");
+                    ChangeButtonImage(secondClick, "0");
+                }
+                firstClick = null; secondClick = null;
+            }
+            if(firstClick == null)
+            {
+                ushort rowpos = (ushort)Grid.GetRow(clickedBtn);
+                ushort colpos = (ushort)Grid.GetColumn(clickedBtn);
+                Tuple<ushort, ushort> firstpos= new Tuple<ushort,ushort>(rowpos, colpos);
+                firstClick = firstpos;
+                if (guessedPhotos[firstClick] == false)
+                    ChangeButtonImage(firstpos, assignedPhoto[firstClick]);
+            }
+            else
+            {
+                ushort rowpos = (ushort)Grid.GetRow(clickedBtn);
+                ushort colpos = (ushort)Grid.GetColumn(clickedBtn);
+                Tuple<ushort, ushort> secondpos= new Tuple<ushort,ushort>(rowpos, colpos);
+                secondClick = secondpos;
+                if (guessedPhotos[secondClick] == false)
+                    ChangeButtonImage(secondpos, assignedPhoto[secondClick]);
+                //TODO: FIX SAME PHOTO CLICK
+                if (assignedPhoto[firstClick] == assignedPhoto[secondClick] )
+                {
+                    guessedPhotos[firstClick] = true;
+                    guessedPhotos[secondClick] = true;
+                    ChangeButtonImage(firstClick, "correct");
+                    ChangeButtonImage(secondClick, "correct");
+                }
+            }
 
+            if(CheckIfGameIsWon() == true)
+            {
+                LabelLevel.Content="YOU WON!";
+            }
+        }
+
+        private bool CheckIfGameIsWon()
+        {
+            foreach(KeyValuePair<Tuple<ushort,ushort>,bool> kvp in guessedPhotos)
+            {
+                if (kvp.Value == false)
+                    return false;
+            }
+            return true;
         }
         private void RandomAssingPhoto()
         {
@@ -176,6 +235,18 @@ namespace Tema1
 
         }
 
+        private void ChangeButtonImage(Tuple<ushort,ushort> pos, string imgname)
+        {
+            Button btn = matrixGrid.Children[(pos.Item1 * NumberOfCols) + pos.Item2 ] as Button;
+            btn.Content =  new Image
+            {
+                Source = new BitmapImage(new Uri(@"Images/"+imgname+".jpg", UriKind.Relative)) ,
+                VerticalAlignment = VerticalAlignment.Center,
+                Stretch = Stretch.Fill,
+                Height = 256,
+                Width = 256
+            };
+        }
 
     }
 }
