@@ -154,7 +154,10 @@ namespace Tema1
 
             if(CheckIfGameIsWon() == true)
             {
-                LabelLevel.Content="YOU WON!";
+                LevelNumber++;
+                NumberOfRows++;
+                NumberOfCols++;
+                InitializeBoard(NumberOfRows,NumberOfCols);
             }
         }
 
@@ -239,7 +242,7 @@ namespace Tema1
         }
         private void ExitClick(object sender, RoutedEventArgs e)
         {
-
+            this.Close();
         }
         private void OptionStandard(object sender, RoutedEventArgs e)
         {
