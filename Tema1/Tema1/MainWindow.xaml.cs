@@ -136,6 +136,9 @@ namespace Tema1
         {
             UserListView.Items.RemoveAt(UserListView.SelectedIndex);
             File.Delete(@"Users/" + selectedUser + ".txt");
+            File.Delete(@"Saves/" + selectedUser + ".txt");
+            File.Delete(@"Saves/" + selectedUser + "_assigned.bin");
+            File.Delete(@"Saves/" + selectedUser + "_guessed.bin");
             using (StreamWriter writer = new StreamWriter("users.txt", append: false))
             {
                 foreach(User user in userList)

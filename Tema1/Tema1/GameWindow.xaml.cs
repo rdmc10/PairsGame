@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Xml.Serialization;
 
 namespace Tema1
 {
@@ -30,7 +33,6 @@ namespace Tema1
         private string PathToImg { get; set; }
 
         private Dictionary<Tuple<ushort,ushort>,string> assignedPhoto { get; set; }
-        private Dictionary<Tuple<ushort, ushort>, Tuple<ushort, ushort>> assignedPairs { get; set; }
         private Dictionary<Tuple<ushort,ushort>,bool> guessedPhotos { get; set; }
         private List<ushort> allPhotos { get; set; }
 
@@ -60,7 +62,6 @@ namespace Tema1
             matrixGrid.RowDefinitions.Clear();
             matrixGrid.ColumnDefinitions.Clear();
             assignedPhoto = new Dictionary<Tuple<ushort,ushort>,string>();
-            assignedPairs = new Dictionary<Tuple<ushort, ushort>, Tuple<ushort, ushort>>();
             guessedPhotos = new Dictionary<Tuple<ushort, ushort>, bool>();
             NumberOfRows = noRows;
             NumberOfCols = noCols;
@@ -213,16 +214,34 @@ namespace Tema1
                     int rndNextIndex = rnd.Next(0, falseKeys.Count);
                     Tuple<ushort,ushort> randomNextPos = falseKeys[rndNextIndex];
                     assignedPhoto[randomNextPos] = assignedPhoto[pos];
-                    assignedPairs[pos] = randomNextPos;
-                    assignedPairs[randomNextPos] = pos;
                 }
             }
         }
 
         private void SaveGameClick(object sender, RoutedEventArgs e)
         {
+
+            BinaryFormatter formatterAssigned = new BinaryFormatter();
+            using (FileStream stream = new FileStream(@"Saves/"+Username +"_assigned.bin", FileMode.Create))
+            {
+                formatterAssigned.Serialize(stream, assignedPhoto);
+            }
+            BinaryFormatter formatterGuessed = new BinaryFormatter();
+            using (FileStream stream = new FileStream(@"Saves/"+Username +"_guessed.bin", FileMode.Create))
+            {
+                formatterGuessed.Serialize(stream, guessedPhotos);
+            }
+
             string filepath = @"Saves/" + Username + ".txt";
-            using(var sw = new StreamWriter(filepath, true))
+            if (!File.Exists(filepath))
+            {
+                File.Create(filepath).Close();
+            }
+            using (FileStream fs = new FileStream(filepath, FileMode.Truncate))
+            {
+
+            }
+            using (var sw = new StreamWriter(filepath, true))
             {
                 sw.WriteLine(NumberOfRows + " " + NumberOfCols);
                 sw.WriteLine(LevelNumber);
@@ -244,10 +263,25 @@ namespace Tema1
             LevelNumber = level;
             NumberOfRows= noRows;
             NumberOfCols= noCols;
-
-            for (int i = 1; i< read.Count; i++)
+            InitializeBoard(NumberOfRows,NumberOfCols);
+            BinaryFormatter formatterAssigned = new BinaryFormatter();
+            using (FileStream stream = new FileStream(@"Saves/"+Username+ "_assigned.bin", FileMode.Open))
             {
-
+                assignedPhoto = (Dictionary<Tuple<ushort,ushort>,string>)formatterAssigned.Deserialize(stream);
+            }
+            BinaryFormatter formatterGuessed = new BinaryFormatter();
+            using (FileStream stream = new FileStream(@"Saves/"+Username+ "_guessed.bin", FileMode.Open))
+            {
+                guessedPhotos = (Dictionary<Tuple<ushort,ushort>,bool>)formatterGuessed.Deserialize(stream);
+            }
+            foreach(Button btn in matrixGrid.Children)
+            {
+                Tuple<ushort, ushort> pos = new Tuple<ushort, ushort>((ushort)Grid.GetRow(btn), (ushort)Grid.GetColumn(btn));
+                if (guessedPhotos[pos] == true)
+                {
+                    MakeButtonUnclickable(pos);
+                    ChangeButtonImage(pos, "correct");
+                }
             }
 
         }
