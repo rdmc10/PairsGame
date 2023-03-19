@@ -75,10 +75,9 @@ namespace Tema1
                 }
             }
             for (int i = 0; i < NumberOfRows; i++)
-            {
                 matrixGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+            for (int i = 0; i < NumberOfCols; i++)
                 matrixGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
-            }
             for (int row = 0; row < NumberOfRows; row++)
             {
                 for (int col = 0; col < NumberOfCols; col++)
@@ -102,7 +101,7 @@ namespace Tema1
         }
         private void NewGameClick(object sender, RoutedEventArgs e)
         {
-            InitializeBoard(NumberOfRows, NumberOfCols);
+            InitializeBoard(NumberOfRows,NumberOfCols);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -154,9 +153,19 @@ namespace Tema1
 
             if(CheckIfGameIsWon() == true)
             {
-                LevelNumber++;
-                NumberOfRows++;
-                NumberOfCols++;
+                if(LevelNumber < 3)
+                {
+                    LevelNumber++;
+                    NumberOfRows++;
+                    NumberOfCols++;
+                }
+                else
+                {
+                    //All levels won
+                    LevelNumber = 1;
+                    NumberOfRows -= 2;
+                    NumberOfCols -= 2;
+                }
                 InitializeBoard(NumberOfRows,NumberOfCols);
             }
         }
@@ -188,14 +197,7 @@ namespace Tema1
                 guessedPhotos[pos] = true;
                 MakeButtonUnclickable(pos);
                 Button lastButton = matrixGrid.Children[(NumberOfRows * NumberOfCols) - 1] as Button;
-                lastButton.Content = new Image
-                {
-                    Source = new BitmapImage(new Uri(@"Images/correct.jpg", UriKind.Relative)) ,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Stretch = Stretch.Fill,
-                    Height = 256,
-                    Width = 256
-                };
+                ChangeButtonImage(pos, "correct");
             }
             foreach(Button btn in matrixGrid.Children)
             {
@@ -222,6 +224,8 @@ namespace Tema1
             string filepath = @"Saves/" + Username + ".txt";
             using(var sw = new StreamWriter(filepath, true))
             {
+                sw.WriteLine(NumberOfRows + " " + NumberOfCols);
+                sw.WriteLine(LevelNumber);
                 foreach(Button btn in matrixGrid.Children)
                 {
                     Image buttonImage = btn.Content as Image;
@@ -233,6 +237,18 @@ namespace Tema1
         }
         private void OpenGameClick(object sender, RoutedEventArgs e)
         {
+            List<string> read = File.ReadLines(@"Saves/" + Username +".txt").ToList();
+            ushort noRows = ushort.Parse(read[0].Split(' ')[0]);
+            ushort noCols = ushort.Parse(read[0].Split(' ')[1]);
+            ushort level = ushort.Parse(read[1]);
+            LevelNumber = level;
+            NumberOfRows= noRows;
+            NumberOfCols= noCols;
+
+            for (int i = 1; i< read.Count; i++)
+            {
+
+            }
 
         }
 
@@ -263,6 +279,8 @@ namespace Tema1
             {
                 NumberOfRows = dialog.CustomRows;
                 NumberOfCols = dialog.CustomCols;
+                Console.WriteLine(dialog.CustomRows + " " + dialog.CustomCols);
+                Console.WriteLine(NumberOfRows+ " " + NumberOfCols);
             }
         }
         private void ChangeButtonImage(Tuple<ushort,ushort> pos, string imgname)
