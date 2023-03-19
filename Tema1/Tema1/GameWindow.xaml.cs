@@ -28,6 +28,9 @@ namespace Tema1
 
         private int NumberOfRows { get; set; }
         private int NumberOfCols { get; set; }
+
+        private int NumberOfWins { get; set; }
+        private int NumberGamesPlayed { get; set; }
         private ushort LevelNumber { get; set; }
         private string Username { get; set; }
         private string PathToImg { get; set; }
@@ -48,12 +51,15 @@ namespace Tema1
             LevelNumber = 1;
             NumberOfRows = 5;
             NumberOfCols = 5;
+            NumberOfWins = 0;
+            NumberGamesPlayed = 0;
             allPhotos= new List<ushort>();
             for(ushort i = 1; i <= 10; i++)
             {
                 allPhotos.Add(i);
             }
             UserImageHolder.Source = new BitmapImage(new Uri(PathToImg, UriKind.Absolute));
+            ReadStatistic();
         }
 
         private void InitializeBoard(int noRows, int noCols)
@@ -103,6 +109,8 @@ namespace Tema1
         private void NewGameClick(object sender, RoutedEventArgs e)
         {
             InitializeBoard(NumberOfRows,NumberOfCols);
+            NumberGamesPlayed++;
+            UpdateStatistic();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -164,10 +172,50 @@ namespace Tema1
                 {
                     //All levels won
                     LevelNumber = 1;
+                    NumberOfWins++;
+                    NumberGamesPlayed++;
                     NumberOfRows -= 2;
                     NumberOfCols -= 2;
+                    UpdateStatistic();
                 }
+                firstClick = null; secondClick = null;
                 InitializeBoard(NumberOfRows,NumberOfCols);
+            }
+        }
+
+        private void ReadStatistic()
+        {
+            string filepath = @"Statistics/" + Username + ".txt";
+            if (!File.Exists(filepath))
+            {
+                File.Create(filepath).Close();
+            }
+            else
+            {
+                List<string> read = File.ReadLines(filepath).ToList();
+                if (read.Count == 2)
+                {
+                    NumberGamesPlayed = int.Parse(read[0]);
+                    NumberOfWins = int.Parse(read[1]);
+                }
+            }
+        }
+
+        private void UpdateStatistic()
+        {
+            string filepath = @"Statistics/" + Username + ".txt";
+            if (!File.Exists(filepath))
+            {
+                File.Create(filepath).Close();
+            }
+            using (FileStream fs = new FileStream(filepath, FileMode.Truncate))
+            {
+
+            }
+            using (var sw = new StreamWriter(filepath, true))
+            {
+                sw.WriteLine(NumberGamesPlayed);
+                sw.WriteLine(NumberOfWins);
             }
         }
 
@@ -256,6 +304,11 @@ namespace Tema1
         }
         private void OpenGameClick(object sender, RoutedEventArgs e)
         {
+            if (!File.Exists(@"Saves/"+Username+".txt"))
+            {
+                MessageBox.Show("User hasn't yet saved a game!");
+                return;
+            }
             List<string> read = File.ReadLines(@"Saves/" + Username +".txt").ToList();
             ushort noRows = ushort.Parse(read[0].Split(' ')[0]);
             ushort noCols = ushort.Parse(read[0].Split(' ')[1]);
@@ -283,12 +336,13 @@ namespace Tema1
                     ChangeButtonImage(pos, "correct");
                 }
             }
-
+            NumberGamesPlayed++;
         }
 
         private void AboutClick(object sender, RoutedEventArgs e)
         {
-
+            AboutWindow aw = new AboutWindow();
+            aw.Show();
         }
         private void ExitClick(object sender, RoutedEventArgs e)
         {
@@ -301,7 +355,8 @@ namespace Tema1
         }
         private void StatisticsClick(object sender, RoutedEventArgs e)
         {
-
+            StatisticsWindow sw = new StatisticsWindow(Username, NumberGamesPlayed,NumberOfWins);
+            sw.Show();
         }
 
         private void OptionCustom(object sender, RoutedEventArgs e)
@@ -313,8 +368,6 @@ namespace Tema1
             {
                 NumberOfRows = dialog.CustomRows;
                 NumberOfCols = dialog.CustomCols;
-                Console.WriteLine(dialog.CustomRows + " " + dialog.CustomCols);
-                Console.WriteLine(NumberOfRows+ " " + NumberOfCols);
             }
         }
         private void ChangeButtonImage(Tuple<ushort,ushort> pos, string imgname)
