@@ -119,6 +119,7 @@ namespace Tema1
             UpdateStatistic();
             GameRunning = true;
             LevelNumber = 1;
+            LabelLevel.Content = "Level : " + LevelNumber.ToString();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
