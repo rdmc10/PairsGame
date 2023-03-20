@@ -41,10 +41,12 @@ namespace Tema1
 
         private Tuple<ushort, ushort> firstClick { get; set; }
         private Tuple<ushort, ushort> secondClick { get; set; }
+        private bool GameRunning { get; set; }
 
         public GameWindow(string username, string pathToImg)
         {
             Username = username;
+            GameRunning = false;
             InitializeComponent();
             LabelUsername.Content = Username;
             PathToImg = pathToImg;
@@ -53,6 +55,8 @@ namespace Tema1
             NumberOfCols = 5;
             NumberOfWins = 0;
             NumberGamesPlayed = 0;
+            assignedPhoto = new Dictionary<Tuple<ushort,ushort>,string>();
+            guessedPhotos = new Dictionary<Tuple<ushort, ushort>, bool>();
             allPhotos= new List<ushort>();
             for(ushort i = 1; i <= 10; i++)
             {
@@ -108,9 +112,13 @@ namespace Tema1
         }
         private void NewGameClick(object sender, RoutedEventArgs e)
         {
+            firstClick = null;
+            secondClick = null;
             InitializeBoard(NumberOfRows,NumberOfCols);
             NumberGamesPlayed++;
             UpdateStatistic();
+            GameRunning = true;
+            LevelNumber = 1;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -268,7 +276,11 @@ namespace Tema1
 
         private void SaveGameClick(object sender, RoutedEventArgs e)
         {
-
+            if(GameRunning == false)
+            {
+                MessageBox.Show("You have to start a game first!");
+                return;
+            }
             BinaryFormatter formatterAssigned = new BinaryFormatter();
             using (FileStream stream = new FileStream(@"Saves/"+Username +"_assigned.bin", FileMode.Create))
             {
@@ -285,21 +297,16 @@ namespace Tema1
             {
                 File.Create(filepath).Close();
             }
+
             using (FileStream fs = new FileStream(filepath, FileMode.Truncate))
             {
 
             }
+
             using (var sw = new StreamWriter(filepath, true))
             {
                 sw.WriteLine(NumberOfRows + " " + NumberOfCols);
                 sw.WriteLine(LevelNumber);
-                foreach(Button btn in matrixGrid.Children)
-                {
-                    Image buttonImage = btn.Content as Image;
-                    BitmapSource bitmapSource = buttonImage.Source as BitmapSource;
-                    string imagePath = (bitmapSource!= null) ? bitmapSource.ToString() : null;
-                    sw.WriteLine(imagePath);
-                }
             }
         }
         private void OpenGameClick(object sender, RoutedEventArgs e)
@@ -307,8 +314,10 @@ namespace Tema1
             if (!File.Exists(@"Saves/"+Username+".txt"))
             {
                 MessageBox.Show("User hasn't yet saved a game!");
+                File.Create(@"Saves/" + Username + " .txt");
                 return;
             }
+            GameRunning = true;
             List<string> read = File.ReadLines(@"Saves/" + Username +".txt").ToList();
             ushort noRows = ushort.Parse(read[0].Split(' ')[0]);
             ushort noCols = ushort.Parse(read[0].Split(' ')[1]);

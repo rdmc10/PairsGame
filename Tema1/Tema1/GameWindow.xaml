@@ -12,11 +12,11 @@
             <ColumnDefinition Width="662*"/>
         </Grid.ColumnDefinitions>
         <DockPanel x:Name="gameWindowDockPanel" Grid.ColumnSpan="2">
-            <Menu DockPanel.Dock="Top">
-                <MenuItem Header="_File">
+            <Menu x:Name="DockMenu" DockPanel.Dock="Top">
+                <MenuItem x:Name="DockHeader" Header="_File">
                     <MenuItem Header="_NewGame" Click="NewGameClick"/>
                     <MenuItem Header="_OpenGame" Click="OpenGameClick" />
-                    <MenuItem Header="_SaveGame" Click="SaveGameClick"/>
+                    <MenuItem x:Name="DockSave" Header="_SaveGame" Click="SaveGameClick" />
                     <MenuItem Header="_Statistics" Click="StatisticsClick"/>
                     <Separator />
                     <MenuItem Header="_Exit" Click="ExitClick"/>

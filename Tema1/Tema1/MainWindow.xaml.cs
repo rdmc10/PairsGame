@@ -145,10 +145,15 @@ namespace Tema1
             File.Delete(@"Saves/" + selectedUser + "_guessed.bin");
             using (StreamWriter writer = new StreamWriter("users.txt", append: false))
             {
+                User user1 = new User("a");
+                
+                foreach (User usr in userList)
+                    if (usr.UserName == selectedUser)
+                        user1 = usr;
+                userList.Remove(user1);
                 foreach(User user in userList)
                 {
-                    if (user.UserName != selectedUser)
-                        writer.WriteLine(user.UserName);
+                    writer.WriteLine(user.UserName);
                 }
             }
             selectedUser = "";
