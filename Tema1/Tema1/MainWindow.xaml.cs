@@ -108,6 +108,10 @@ namespace Tema1
 
         private void GetUsersFromText()
         {
+            if (!File.Exists("users.txt"))
+            {
+                File.Create("users.txt");
+            }
             List<string> read = File.ReadLines("users.txt").ToList();
             foreach ( string line in read )
             {
